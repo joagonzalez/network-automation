@@ -13,7 +13,7 @@ Repositorio con ejemplos de automatización orientados a infraestructura de tele
 ## Telemetry ICMP
 
 ```bash
-(network-automation) jgonzalez@turing:~/dev/network-automation/telemetry/ansible/sbc(master)$ ansible-playbook -i inventory icmp.yml
+(network-automation) jgonzalez@turing:~/dev/network-automation/telemetry/ansible/sbc(master)$ ansible-playbook -i  hosts icmp.yml
 ```
 
 ## Telemetry SBC
