@@ -1,7 +1,7 @@
 version: "3"
 services:
   grafana:
-    image: telemetry/grafana_telemetry:1.0 # grafana/grafana:latest-ubuntu
+    image: grafana/grafana:latest-ubuntu
     deploy: 
       placement: 
         constraints: 
@@ -19,7 +19,7 @@ services:
       - /shared/network-telemetry/grafana/defaults.ini:/usr/share/grafana/conf/defaults.ini
 
   influxdb:
-    image: telemetry/influxdb_telemetry:1.0 # influxdb
+    image: influxdb
     deploy: 
       placement: 
         constraints: 

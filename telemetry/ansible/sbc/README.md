@@ -29,4 +29,4 @@ Se logueara la ejecución de este script en log/cron.log
 #### loop
 Script que ejecuta playbook de ansible recursivamente para recolectar información de los session border controller. Este esquema genérico de recolección pull puede aplicarse para otras situaciones.
 
-![Figura 1](doc/sbctelemetry.png)
+![Figura 1](doc/sbc.png)
