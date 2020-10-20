@@ -24,6 +24,9 @@ Repositorio con ejemplos de automatización orientados a infraestructura de tele
 
 ## Automation SBC
 Flujo para desarrollo
+
 ![automation](automation/doc/automation.png)
+
+![automation_dag](automation/doc/dag.png)
 
 Ver README.md de automation
