@@ -1,0 +1,24 @@
+    # show results
+    - name: --- parsed uptime ---
+      debug:
+        msg: "data parseada: {{uptime | to_nice_json}}"
+
+    - name: --- parsed cpu utilization ---
+      debug:
+        msg: "data parseada: {{cpu_percentage | to_nice_json}}"
+
+    - name: --- parsed version ---
+      debug:
+        msg: "data parseada: {{version | to_nice_json}}"
+
+    - name: --- parsed proxy-set-status ---
+      debug:
+        msg: "data parseada: {{proxy_sets | to_nice_json}}"
+
+    - name: --- parsed alarms ---
+      debug:
+        msg: "data parseada: {{alarms | to_nice_json}}"
+
+    - name: --- parsed active-calls ---
+      debug:
+        msg: "data parseada: {{active_calls | to_nice_json}}"

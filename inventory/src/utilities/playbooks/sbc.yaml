@@ -1,0 +1,65 @@
+---
+- name: RUN COMMAND AND PRINT TO TERMINAL WINDOW
+  hosts: sbc
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+    - debug:
+        msg: "SIP Trunk: {{sip_trunk_ip_address}} \nPort: {{port}}"
+
+    # - name: --- pull changes from git newcos-telemetry
+    #   shell: |
+    #     git pull origin prod-redlink
+    #   args:
+    #     chdir: "{{ telemetry_repo_path }}"
+    #   run_once: true
+
+    # date info for backup file 
+    - name: Get timestamp from the system
+      shell: "date +%Y-%m-%d"
+      register: tstamp
+      delegate_to: localhost
+
+    - name: Telnet a SBCs
+      telnet:
+        timeout: 30
+        user: "sbcadmin\r"
+        password: "Argentina2020#\r"
+        login_prompt: "Username: "
+        password_prompt: "Password: "
+        prompts:
+          - "M800B>|M800B#|Mediant VE SBC# "
+        command:
+          - "show activity-log\r "
+          - "show system version | grep Board\r\n"
+          - "show system cpu-util\r "
+          - "show system uptime\r "
+          - "show running-config\r "
+          - "show voip proxy sets status\r"
+          - "show system alarms\r"
+          - "show voip calls active sbc\r"
+          #- "show voip channel-stats jitter-threshold 0\r"
+      register: audiocodesOutput
+
+    # - debug:
+    #     msg: "{{audiocodesOutput}}"  
+
+    - name: --- debugging information of commands executed at SBCs via telnet
+      import_tasks: tasks/debug.yaml
+
+    # - name: --- parse results with textFSM
+    #   import_tasks: tasks/parse.yaml
+  
+    # - name: --- show parsed results
+    #   import_tasks: tasks/results.yaml
+  
+    # - name: --- send backup config to github repository
+    #   import_tasks: tasks/jinja.yaml
+
+    # - name: --- send data to influx
+    #   import_tasks: tasks/influx.yaml
+
+    # - name: --- send backup config to github repository
+    #   import_tasks: tasks/git.yaml

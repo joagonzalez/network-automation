@@ -1,0 +1,43 @@
+# (config-voip)# proxy-set 0
+# (proxy-set-0)# proxy-enable-keep-alive using-options
+# (proxy-set-0)# is-proxy-hot-swap enable
+# (proxy-set-0)# proxy-redundancy-mode homing
+# (proxy-set-0)# activate
+
+# jinja templates
+- name: mop template
+  set_fact:
+    jinja_template: "{{lookup('template', 'templates/sip.j2')}}"
+
+- debug:
+    msg: "{{ jinja_template }}"
+  
+- debug:
+    msg: " proxy set: {{proxy_set}} \
+          \n srd name: {{srd_name}} \
+          \n sip interface: {{sip_interface}} \
+          \n proxy name: {{proxy_name}}"
+
+- name: Telnet a SBCs
+  telnet:
+    timeout: 30
+    user: "sbcadmin\r"
+    password: "Argentina2020#\r"
+    login_prompt: "Username: "
+    password_prompt: "Password: "
+    prompts:
+      - "M800B>|M800B#|Mediant VE SBC#|Mediant VE SBC(config-voip)#|Mediant VE SBC(proxy-set-[0-9]+)#|[)#] "
+    command:
+      - "{{jinja_template}}"
+      # - "configure voip\r "
+      # - "proxy-set {{proxy_set}}\r\n\r\n "
+      # - "proxy-redundancy-mode homing\r "
+      # - "srd-name {{srd_name}}"
+      # - "sbcipv4-sip-int-name {{sip_interface}}"  
+      # - "proxy-name {{proxy_name}}"
+      # - "activate\r "
+      # - "exit \r "
+  register: sipOutput
+
+- debug:
+    msg: "{{sipOutput}}"

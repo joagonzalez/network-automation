@@ -1,0 +1,9 @@
+#jinja2: newline_sequence:'\r\n\r\n'
+configure voip
+proxy-set {{proxy_set}}
+proxy-redundancy-mode homing
+srd-name {{srd_name}}
+sbcipv4-sip-int-name {{sip_interface}}
+proxy-name {{proxy_name}}
+activate
+exit

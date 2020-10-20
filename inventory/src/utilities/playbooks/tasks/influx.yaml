@@ -1,0 +1,15 @@
+  - name: --- Write points into database
+    influxdb_write:
+      hostname: "{{influxdb_ip}}"
+      database_name: "{{influxdb_database_name}}"
+      data_points:
+        - measurement: "{{influxdb_measurement}}"
+          tags:
+            host: "{{ansible_host}}"
+          #time: "{{ ansible_date_time.iso8601 }}"
+          fields:
+            CPU: "{{cpu_percentage[0].cpu_percentage}}"
+            BOARD: "{{version[0].board}}"
+            CODERS: "{{version[0].coders_voice}}"
+            CONTROL_PROTOCOLS: "{{version[0].control_protocols}}"
+    delegate_to: localhost  

@@ -1,0 +1,13 @@
+- name: 
+  set_fact: 
+    backup_path: "{{lookup('env', 'DAG_WORKING_FOLDER')}}"
+  delegate_to: localhost
+
+- name: copy configuration extracted from device to localhost
+  copy:
+    content: "{{backup}}"
+    dest: "{{backup_path}}/backup_{{task_id}}_{{tstamp['stdout_lines'][0]}}.conf"
+    owner: airflow  
+    group: airflow
+    mode: '0774'
+  delegate_to: localhost

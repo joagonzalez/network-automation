@@ -1,0 +1,7 @@
+# jinja templates
+- set_fact:
+    influx_result: "{{lookup('template', 'templates/influx_data.j2')}}"
+
+- debug:
+    msg: "{{ influx_result }}"
+    

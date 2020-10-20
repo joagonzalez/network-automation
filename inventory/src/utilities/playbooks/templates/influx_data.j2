@@ -1,0 +1,26 @@
+#jinja2: lstrip_blocks: True
+{% set uptime = audiocodesOutput.output[3] | parse_cli_textfsm('parsers/uptime.template') %}
+{% set cpu_percentage = audiocodesOutput.output[2] | parse_cli_textfsm('parsers/cpu.template') %}
+{% set version = audiocodesOutput.output[1] | parse_cli_textfsm('parsers/version.template') %}
+{% set proxy_sets = audiocodesOutput.output[5] | parse_cli_textfsm('parsers/proxy_set_status.template') %}
+{% set alarms = audiocodesOutput.output[6] | parse_cli_textfsm('parsers/alarms.template') %}
+{% set active_calls = audiocodesOutput.output[7] | parse_cli_textfsm('parsers/active_calls.template') %}
+
+{% set uptime_seconds = ((uptime[0].days | int) * 24 * 60 * 60) + ((uptime[0].hours | int) * 60 * 60) + ((uptime[0].minutes | int) * 60) + (uptime[0].seconds | int) %}
+
+{% set influx_data = {} %}
+{% set _ = influx_data.update({'uptime': uptime_seconds}) %}
+{% set _ = influx_data.update({'cpu': cpu_percentage[0].cpu_percentage}) %}
+{% set _ = influx_data.update({'board': version[0].board}) %}
+{% set _ = influx_data.update({'sbc_ip': version[0].board_ip_address}) %}
+{% set _ = influx_data.update({'sbc_mask': version[0].board_subnet}) %}
+{% set _ = influx_data.update({'sbc_dw': version[0].board_dw}) %}
+{% set _ = influx_data.update({'sbc_dw': version[0].control_protocols}) %}
+{% set _ = influx_data.update({'codecs': version[0].coders_voice}) %}
+{% set _ = influx_data.update({'channel_type': version[0].channel_type}) %}
+{% set _ = influx_data.update({'alarms': alarms}) %}
+{% set _ = influx_data.update({'active_calls': active_calls}) %}
+{% set _ = influx_data.update({'proxy_set_status': proxy_sets}) %}
+
+
+{{ influx_data | to_nice_json }}

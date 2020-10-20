@@ -1,0 +1,13 @@
+Value HOST (\S+)
+Value PACKET_LOSS (\d+%)
+Value PACKET_RX (\d+)
+Value PACKET_TX (\d+)
+Value RTT_AVG (\d+\.\d+)
+Value RTT_MAX (\d+\.\d+)
+Value RTT_MDEV (\d+\.\d+)
+Value RTT_MIN (\d+\.\d+)
+
+Start
+  ^.*PING\s${HOST}.*
+  ^.*${PACKET_TX} packets transmitted, ${PACKET_RX} received, ${PACKET_LOSS}.*
+  ^.*mdev = ${RTT_MIN}/${RTT_AVG}/${RTT_MAX}/${RTT_MDEV}.* -> Record
