@@ -1,0 +1,47 @@
+---
+- name: Ping statistics processing
+  hosts: monitoreo
+  connection: local
+  gather_facts: no
+
+  vars:
+    - influxdb_ip: "qwerty.com.ar"
+    - influxdb_database_name: "mat"
+    - ansible_python_interpreter: /usr/bin/python3.8
+
+  tasks:
+
+    - name: ping
+      shell: ping -c 6 -w 6 {{ansible_host}}
+      ignore_errors: true
+      register: output
+
+    - debug:
+        msg: "{{output.stdout}}"
+
+    - name: --- Save influxdb data
+      set_fact:
+        influx_data: "{{output.stdout | parse_cli_textfsm('icmp_parser.template')}}"
+
+    - debug:
+        msg: "{{influx_data}}"        
+
+    - name: --- Write points into database
+      influxdb_write:
+        hostname: "{{influxdb_ip}}"
+        database_name: "{{influxdb_database_name}}"
+        data_points:
+          - measurement: network
+            tags:
+              host: "{{ansible_host}}"
+            #time: "{{ ansible_date_time.iso8601 }}"
+            fields:
+              PACKET_TX: "{{influx_data[0].PACKET_TX}}"
+              PACKET_RX: "{{influx_data[0].PACKET_RX}}"
+              PACKET_LOSS: "{{influx_data[0].PACKET_LOSS}}"
+              RTT_MIN: "{{influx_data[0].RTT_MIN}}"
+              RTT_AVG: "{{influx_data[0].RTT_AVG}}"
+              RTT_MAX: "{{influx_data[0].RTT_MAX}}"
+              RTT_MDEV: "{{influx_data[0].RTT_MDEV}}"
+      delegate_to: localhost
+      

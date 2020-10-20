@@ -1,0 +1,108 @@
+---
+- name: Gathering SBC information 
+  hosts: sbc
+  connection: local
+  gather_facts: true
+  vars:
+    ansible_telnet_user: "sbcadmin\r"
+    ansible_telnet_pass: "Argentina2020#\r"
+    ansible_telnet_pass_chile: "Argentina2020$\r"
+    ansible_python_interpreter: /usr/bin/python3.8
+
+
+  tasks:
+
+    # - name: --- pull changes from git newcos-telemetry
+    #   shell: |
+    #     git pull origin prod-redlink
+    #   args:
+    #     chdir: "{{ telemetry_repo_path }}"
+    #   run_once: true
+
+    # date info for backup file 
+    - name: Get timestamp from the system
+      shell: "date +%Y-%m-%d"
+      register: tstamp
+      delegate_to: localhost
+
+    - name: Telnet a SBCs
+      telnet:
+        timeout: 30
+        user: "{{ansible_telnet_user}}"
+        password: "{{ansible_telnet_pass}}"
+        login_prompt: "Username: "
+        password_prompt: "Password: "
+        prompts:
+          - "M800B>|M800B#|Mediant VE SBC# |Mediant VE SBC> "
+        command:
+          - "show voip channel-stats rtt-threshold 0\r "
+          - "show system version | grep Board\r\n"
+          - "show system cpu-util\r "
+          - "show system uptime\r "
+          - "show running-config\r "
+          - "show voip proxy sets status\r"
+          - "show system alarms\r"
+          - "show voip calls active sbc\r"
+          - "show voip calls history sbc first 30\r"
+          - "show voip calls statistics sbc\r"
+      register: audiocodes_sbc_1
+      when: ansible_host == "13.66.159.172"
+
+    - name: Telnet a SBCs
+      telnet:
+        timeout: 30
+        user: "{{ansible_telnet_user}}"
+        password: "{{ansible_telnet_pass_chile}}"
+        login_prompt: "Username: "
+        password_prompt: "Password: "
+        prompts:
+          - "M800B>|M800B#|Mediant VE SBC# |Mediant VE SBC> "
+        command:
+          - "show voip channel-stats rtt-threshold 0\r "
+          - "show system version | grep Board\r\n"
+          - "show system cpu-util\r "
+          - "show system uptime\r "
+          - "show running-config\r "
+          - "show voip proxy sets status\r"
+          - "show system alarms\r"
+          - "show voip calls active sbc\r"
+          - "show voip calls history sbc first 30\r"
+          - "show voip calls statistics sbc\r"
+      register: audiocodes_sbc_2
+      when: ansible_host == "52.247.246.41"
+
+    # Estos set_fact se solucionan poniendo variables de auth en inventario
+    - set_fact:
+        audiocodesOutput: "{{audiocodes_sbc_2}}"
+      when: audiocodes_sbc_2 is defined and audiocodes_sbc_2.output is defined
+    
+    - set_fact:
+        audiocodesOutput: "{{audiocodes_sbc_1}}"
+      when: audiocodes_sbc_1 is defined and audiocodes_sbc_1.output is defined
+
+
+    ########################################################################
+
+#    - name: --- backing up sbc configuration files
+#      import_tasks: tasks/backup.yaml
+
+    - name: --- icmp data
+      import_tasks: tasks/icmp.yaml
+
+    - name: --- debugging information of commands executed at SBCs via telnet
+      import_tasks: tasks/debug.yaml
+
+    - name: --- parse results with textFSM
+      import_tasks: tasks/parse.yaml
+  
+    - name: --- show parsed results
+      import_tasks: tasks/results.yaml
+  
+    - name: --- send render data
+      import_tasks: tasks/jinja.yaml
+
+    - name: --- send data to influx
+      import_tasks: tasks/influx.yaml
+
+    # - name: --- send backup config to github repository
+    #   import_tasks: tasks/git.yaml

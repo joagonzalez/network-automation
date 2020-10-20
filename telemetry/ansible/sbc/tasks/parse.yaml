@@ -1,0 +1,37 @@
+    # textFSM templates
+    - set_fact:
+        backup: "{{audiocodesOutput.output[4]}}"
+
+    - set_fact:
+        config_ip_group: "{{audiocodesOutput.output[4] | parse_cli_textfsm('parsers/config_ip_group.template') }}"
+
+    - set_fact:
+        uptime: "{{ audiocodesOutput.output[3] | parse_cli_textfsm('parsers/uptime.template') }}"
+
+    - set_fact:
+        cpu_percentage: "{{ audiocodesOutput.output[2] | parse_cli_textfsm('parsers/cpu.template') }}"
+
+    - set_fact:
+        rtd_jitter: "{{ audiocodesOutput.output[0] | parse_cli_textfsm('parsers/rtd_jitter.template') }}"
+
+    - set_fact:
+        version: "{{ audiocodesOutput.output[1] | parse_cli_textfsm('parsers/version.template') }}"
+
+    - set_fact:
+        proxy_set: "{{ audiocodesOutput.output[5] | parse_cli_textfsm('parsers/proxy_set_status.template') }}"
+    
+    - set_fact:
+        alarms: "{{ audiocodesOutput.output[6] | parse_cli_textfsm('parsers/alarms.template') }}"
+
+    - set_fact:
+        active_calls: "{{ audiocodesOutput.output[7] | parse_cli_textfsm('parsers/active_calls.template') }}"  
+
+    - set_fact:
+        last_calls: "{{ audiocodesOutput.output[8] | parse_cli_textfsm('parsers/last_calls.template') }}"  
+
+    - set_fact:
+        usage_statistics: "{{ audiocodesOutput.output[9] | parse_cli_textfsm('parsers/last_calls.template') }}"  
+
+    - set_fact:
+        icmp_parsed: "{{icmp_output.stdout | parse_cli_textfsm('parsers/icmp_parser.template')}}"
+      delegate_to: localhost

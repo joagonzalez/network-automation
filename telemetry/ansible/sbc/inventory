@@ -1,0 +1,32 @@
+[sbc]
+# 192.168.0.20 ansible_host=192.168.0.20 
+13.66.159.172 ansible_host=13.66.159.172
+52.247.246.41 ansible_host=52.247.246.41
+
+[sbc:vars]
+ansible_network_os = audiocodes
+ansible_port=23
+ansible_ssh_pass=Argentina2020#
+ansible_ssh_user=sbcadmin
+ansible_password=Argentina2020#
+ansible_hostname = sbc_martinez
+influxdb_ip = qwerty.com.ar
+influxdb_port = 8086
+influxdb_username = admin
+influxdb_password = qwertynet
+influxdb_database_name = mat
+influxdb_measurement_sbc = sbc
+influxdb_measurement_service_status = proxy_set
+influxdb_measurement_last_calls = last_calls
+influxdb_measurement_alarms = alarms
+influxdb_measurement_icmp = icmp
+influxdb_measurement_usage_statistics = usage
+influxdb_measurement_active_calls = active_calls
+influxdb_measurement_active_calls_ipg = contador_ipg
+influxdb_measurement_ipg_alert = contador_ipg_alarm
+local_git_repo_path = /code/newcos-network-backups
+#local_git_repo_path = /home/jgonzalez/dev/newcos-network-backups
+telemetry_repo_path = /code/network-telemetry
+#telemetry_repo_path = /home/jgonzalez/dev/newcos-telemetry
+sbc_user = sbcadmin
+sbc_password = Argentina2020#

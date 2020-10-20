@@ -1,0 +1,21 @@
+[sbc]
+# 192.168.0.20 ansible_host=192.168.0.20
+13.66.159.172 ansible_host=13.66.159.172
+
+[sbc:vars]
+ansible_network_os = audiocodes
+ansible_port=23
+ansible_ssh_pass=Argentina2020#
+ansible_ssh_user=sbcadmin
+ansible_password=Argentina2020#
+ansible_hostname = sbc_martinez
+influxdb_ip = influxip
+influxdb_database_name = database
+influxdb_measurement = sbc
+local_git_repo_path = /code/network-backups
+#local_git_repo_path = /home/jgonzalez/dev/network-backups
+telemetry_repo_path = /code/newcos-telemetry
+#telemetry_repo_path = /home/jgonzalez/dev/network-automation
+sbc_user = sbcadmin
+sbc_password = Argentina2020#
+

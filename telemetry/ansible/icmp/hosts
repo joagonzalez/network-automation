@@ -1,0 +1,8 @@
+[monitoreo]
+google ansible_host=8.8.8.8
+qwerty ansible_host=qwerty.com.ar
+clarin ansible_host=clarin.com
+youtube ansible_host=youtube.com
+facebook ansible_host=facebook.com
+
+
