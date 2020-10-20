@@ -94,7 +94,7 @@ Esquema de integración de dynamic-inventory desde workflow de airflow considera
 
 Todos los ejemplos toman el DAG `utilities/dags/network_dag.py` que implementa una integración *end-to-end*.
 
-![integracion-airflow-diagrama](docs/inventory-airflow.png)
+![integracion-airflow-diagrama](docs/dynamic-inventory-airflow-inventory.png)
 
 
 Ejemplo ejecución de workflow a través de api airflow con parametrización en objeto conf.
@@ -205,7 +205,7 @@ Ejemplo de playbook que utiliza jinja2 para configurar SBC AudioCodes desde airf
 ### Integracion Standalone
 Flujo de la integración de dynamic-inventory utilizado de manera directa con ansible. Los ejemplos de uso se muestran en la sección correspondiente.
 
-![integracion-airflow-diagrama](docs/dynamic-inventory-airflow-inventory.png)
+![integracion-airflow-diagrama](docs/inventory-airflow.png)
 
 
 ### Despliegue
