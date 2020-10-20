@@ -205,7 +205,7 @@ Ejemplo de playbook que utiliza jinja2 para configurar SBC AudioCodes desde airf
 ### Integracion Standalone
 Flujo de la integración de dynamic-inventory utilizado de manera directa con ansible. Los ejemplos de uso se muestran en la sección correspondiente.
 
-![integracion-airflow-diagrama](docs/dynamic-inventory-ansible-inventory.png)
+![integracion-airflow-diagrama](docs/dynamic-inventory-airflow-inventory.png)
 
 
 ### Despliegue
