@@ -34,12 +34,12 @@ DAGS = '/usr/local/airflow/dags'
 PLAYBOOKS = '/usr/local/airflow/playbooks'
 SCRIPTS = '/usr/local/airflow/scripts'
 ANSIBLE_PLAYBOOK = 'sbc_audiocodes_telnet.yaml'
-DAG_WORKING_FOLDER = '/usr/local/airflow/logs/newcos_dag'
-BACKUP_WORKING_FOLDER = '/shared/newcos-automation/dev/logs/newcos_dag'
+DAG_WORKING_FOLDER = '/usr/local/airflow/logs/network_automation'
+BACKUP_WORKING_FOLDER = '/shared/network-automation/dev/logs/network_automation'
 LOG_SERVICE = 'automationlogs'
 
 import sys
-sys.path.append(SCRIPTS + '/newcos-inventory/src')
+sys.path.append(SCRIPTS + '/dynamic-inventory/src')
 from services.FormioService import Formio
 from  services.MSTeamsService import send_teams_message
 
@@ -63,24 +63,24 @@ dag = DAG(
 )
 
 ########################################################################################################################
-##############################################                  ########################################################
-##############################################  Custom Functions  ########################################################
-##############################################                  ########################################################
+#############################################                    #######################################################
+#############################################  CUSTOM FUNCTIONS  #######################################################
+#############################################                    #######################################################
 ########################################################################################################################
 
 def teams_message(**context):
     conf = context["dag_run"].conf
-    NEWCOS_SERVICE = conf['NEWCOS_SERVICE']
-    NEWCOS_SUBMISSION = conf['NEWCOS_SUBMISSION']
+    NETWORK_SERVICE = conf['NETWORK_SERVICE']
+    NETWORK_SUBMISSION = conf['NETWORK_SUBMISSION']
 
     formio = Formio()
     
-    data = formio.get_submission(NEWCOS_SERVICE, NEWCOS_SUBMISSION)
+    data = formio.get_submission(NETWORK_SERVICE, NETWORK_SUBMISSION)
     task_id = data[0]['data']['task_id']
     submission = data[0]
     backup_date = backup_date = datetime.now().strftime("%Y-%m-%d")
 
-    msg = 'NEWCOS_SERVICE: ' + str(NEWCOS_SERVICE) + '\n   NEWCOS_SUBMISSION: ' + NEWCOS_SUBMISSION
+    msg = 'NETWORK_SERVICE: ' + str(NETWORK_SERVICE) + '\n   NETWORK_SUBMISSION: ' + NETWORK_SUBMISSION
     f = open(DAG_WORKING_FOLDER + '/' + 'backup_' + str(task_id) + '_'+ str(backup_date) + '.conf')
     data = f.read()
     # msg += '\n   ' + str(data)
@@ -101,17 +101,17 @@ def context_data(**context):
 def save_backup(**context):
     # get task env
     conf = context["dag_run"].conf
-    NEWCOS_SERVICE = conf['NEWCOS_SERVICE']
-    NEWCOS_SUBMISSION = conf['NEWCOS_SUBMISSION']
+    NETWORK_SERVICE = conf['NETWORK_SERVICE']
+    NETWORK_SUBMISSION = conf['NETWORK_SUBMISSION']
 
     print('CONF PARAMETERS FROM API: ' + str(conf))
 
     # get data from form.io
     formio = Formio()
-    # os.environ["NEWCOS_SERVICE"] = NEWCOS_SERVICE
-    # os.environ["NEWCOS_SUBMISSION"] = NEWCOS_SUBMISSION
+    # os.environ["NETWORK_SERVICE"] = NETWORK_SERVICE
+    # os.environ["NETWORK_SUBMISSION"] = NETWORK_SUBMISSION
 
-    data = formio.get_submission(NEWCOS_SERVICE, NEWCOS_SUBMISSION)
+    data = formio.get_submission(NETWORK_SERVICE, NETWORK_SUBMISSION)
     print(data[0]['data'])
     task_id = data[0]['data']['task_id']
     submission = data[0]
@@ -128,15 +128,15 @@ def save_backup(**context):
     print('update submission')
     submission['data']['backup'] = data
     submission['data']['last_backup'] = backup_date_formio
-    formio.update_submission(NEWCOS_SERVICE, NEWCOS_SUBMISSION, submission)
+    formio.update_submission(NETWORK_SERVICE, NETWORK_SUBMISSION, submission)
 
     # crea logs
     print('create logs for this task')
     msg = "Backup succesfuly done!"
     submission_logs =  {
                             "data": {
-                                "resource": NEWCOS_SERVICE,
-                                "taskId": NEWCOS_SUBMISSION,
+                                "resource": NETWORK_SERVICE,
+                                "taskId": NETWORK_SUBMISSION,
                                 "log": msg,
                                 "date": backup_date_formio
                             }
@@ -148,31 +148,31 @@ def save_backup(**context):
 def send_email(**context):
     # get task env
     conf = context["dag_run"].conf
-    NEWCOS_SERVICE = conf['NEWCOS_SERVICE']
-    NEWCOS_SUBMISSION = conf['NEWCOS_SUBMISSION']
+    NETWORK_SERVICE = conf['NETWORK_SERVICE']
+    NETWORK_SUBMISSION = conf['NETWORK_SUBMISSION']
 
     # get data from form.io
     formio = Formio()
-    data = formio.get_submission(NEWCOS_SERVICE, NEWCOS_SUBMISSION)
+    data = formio.get_submission(NETWORK_SERVICE, NETWORK_SUBMISSION)
 
     task_id = data[0]['data']['task_id']
     submission = data[0]
     backup_date = backup_date = datetime.now().strftime("%Y-%m-%d")
     server = "http://cluster.smq.net:3002/api/v1/events"
 
-    msg = 'NEWCOS WORKFLOW RUN: NEWCOS_SERVICE: ' + str(NEWCOS_SERVICE) + '\n   NEWCOS_SUBMISSION: ' + NEWCOS_SUBMISSION
+    msg = 'NETWORK WORKFLOW RUN: NETWORK_SERVICE: ' + str(NETWORK_SERVICE) + '\n   NETWORK_SUBMISSION: ' + NETWORK_SUBMISSION
 
     # mail body
     body = {
         "event":"sendMail",
         "tenant_id":"58005ddb-3d82-4718-9e75-ec5c71cca7ec",
         "transaction_id":"5ee9038471ca5d0f6fd02175",
-        "transaction_src":"newcos-manager@latest",
+        "transaction_src":"network-manager@latest",
         "transaction_reply" : "event-reply",
-        "user_graph":"teams.admin@newtech.com.ar",
-        "pass_graph":"Password01",
+        "user_graph":"teams.admin@demo.com.ar",
+        "pass_graph":"password",
         "subject": 'WORKFLOW newcos_dag | TASK ID: ' + str(task_id) + ' | DATE: ' + str(backup_date),
-        "to": ["dev@newtech.com.ar", "joaquin.gonzalez@newtech.com.ar"],
+        "to": ["joagonzalez@gmail.com"],
         "contentType" : "text",
         "bodyText" : msg,
         "attachment" : True,
@@ -191,13 +191,13 @@ def send_email(**context):
 ###############################################                     ####################################################
 ########################################################################################################################
 environment_ansible = {
-                        'NEWCOS_SERVICE': '{{ dag_run.conf["NEWCOS_SERVICE"] if dag_run else "" }}',
-                        'NEWCOS_SUBMISSION': '{{ dag_run.conf["NEWCOS_SUBMISSION"] if dag_run else "" }}',
+                        'NETWORK_SERVICE': '{{ dag_run.conf["NETWORK_SERVICE"] if dag_run else "" }}',
+                        'NETWORK_SUBMISSION': '{{ dag_run.conf["NETWORK_SUBMISSION"] if dag_run else "" }}',
                         'DAG_WORKING_FOLDER': DAG_WORKING_FOLDER    
                       }
 
 templated_command =  'cd ' + PLAYBOOKS + \
-        ' && ansible-playbook -i ' + SCRIPTS + '/newcos-inventory/src/newcos-inventory.py ' + PLAYBOOKS + \
+        ' && ansible-playbook -i ' + SCRIPTS + '/network-automation/src/dynamic-inventory.py ' + PLAYBOOKS + \
         '/' + ANSIBLE_PLAYBOOK + ' && printenv'
 
 network_init = BashOperator(task_id='network_init',bash_command='ansible --version -vvv', dag=dag,)
